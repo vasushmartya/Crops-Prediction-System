@@ -1,67 +1,65 @@
-# **🌾 Crop Predict: Smart Farming Through Soil Analysis**
+# **🌾 Crop Predict: Smart Farming Assistant**
 
 ## **Overview**
 
-**Crop Predict** is a web application designed to help farmers make data-driven decisions on optimal crop selection. By analyzing seven key soil and environmental parameters (N, P, K, pH, Rainfall, Temperature, and Humidity), the application uses a Machine Learning model (Random Forest Classifier) to recommend the best crop for the given conditions.
+Crop Predict is a full-stack web application designed to assist farmers in making data-driven decisions about crop selection. By leveraging a machine learning model, it analyzes key soil and environmental parameters (NPK, pH, Rainfall, Temperature, and Humidity) and provides a precise recommendation for the most suitable crop to cultivate. The application supports multilingual results (English and Hindi) through server-side translation.
 
-This project is structured as a full-stack application leveraging a **Flask (Python) backend** for model execution and a **Static HTML/CSS/JavaScript frontend** for the user interface. It features multilingual support achieved through a hybrid approach.
+## **🛠️ Technology Stack**
 
-## **✨ Features**
+| Component | Technology | Role |
+| :---- | :---- | :---- |
+| **Frontend** | HTML5, CSS3, JavaScript | User Interface, input collection, and multilingual handling for static content. |
+| **Backend** | Python (Flask) | Lightweight web server to host the ML model and serve predictions via a REST API. |
+| **Model** | Scikit-learn (.pkl file) | Machine learning model (e.g., Random Forest Classifier) for crop classification. |
+| **Dependencies** | joblib, numpy, flask, flask-cors | Python libraries for model loading, data manipulation, and API creation. |
 
-* **Intelligent Prediction:** Utilizes a trained RandomForestClassifier (stored in crop\_model.pkl) to suggest optimal crops.  
-* **7 Key Parameters:** Accepts inputs for Nitrogen (N), Phosphorous (P), Potassium (K), pH, Rainfall, Temperature, and Humidity.  
-* **Real-Time API Integration:** The frontend communicates with a Flask API endpoint (/predict) to request predictions.  
-* **Multilingual Support (i18n):**  
-  * **Static UI Translation:** Headings, labels, and static text are translated instantly client-side using a JavaScript dictionary.  
-  * **Dynamic Prediction Translation:** The final crop recommendation returned by the ML model is translated server-side using the **Google Cloud Translation API** based on the user's selected language.
+## **📦 Project Structure**
 
-## **🚀 Getting Started**
+The project follows a standard structure for web applications with a Python backend:
 
-To run this application, you need to set up both the Python backend and open the HTML frontend.
+/project-folder  
+├── crop\_model.pkl          \# The trained ML model file (critical)  
+├── app.py                  \# The Flask server and prediction API  
+├── index.html              \# The main web page (UI, inputs, result display)  
+├── script.js               \# Frontend JavaScript for logic and translation switching  
+└── style.css               \# Styling for the web page
 
-### **Prerequisites**
+## **⚙️ Setup and Installation**
 
-1. Python 3.8+  
-2. Google Cloud Project (for Translation API authentication and billing)  
-3. The trained ML model saved as crop\_model.pkl.
+### **1\. Backend Setup (Python/Flask)**
 
-### **1\. Backend Setup (app.py & Model)**
+To run the prediction API, you need Python installed.
 
-1. **Project Structure:** Ensure your files are organized as follows:  
-   /CropPredict  
-   ├── app.py             \# Flask server script  
-   ├── crop\_model.pkl     \# The trained ML model  
-   ├── index.html         \# Frontend interface  
-   ├── style.css          \# Frontend styles  
-   └── script.js          \# Frontend logic (ML call & i18n)
+1. **Install Dependencies:** Open your terminal in the project directory and install the required Python packages:  
+   pip install Flask joblib numpy flask-cors
 
-2. **Install Python Dependencies:**  
-   pip install Flask joblib numpy google-cloud-translate
-
-3. **Google Cloud Authentication:**  
-   * Enable the **Cloud Translation API** in your GCP project console.  
-   * Authenticate your environment for the Python application (e.g., using a Service Account or running gcloud auth application-default login).  
-   * **CRITICAL:** Update the PROJECT\_ID variable in app.py with your unique Google Cloud Project ID.
-
-\# Snippet from app.py  
-PROJECT\_ID \= "your-gcp-project-id" \# \<--- \*\*UPDATE THIS LINE\*\*  
-PARENT \= f"projects/{PROJECT\_ID}"
-
-4. **Run the Server:**  
+2. **Run the Server:** Start the Flask application. It will run locally on http://127.0.0.1:5000/.  
    python app.py
 
-   The server will start on http://127.0.0.1:5000/.
+   You should see confirmation messages like: Model (crop\_model.pkl) loaded successfully.
 
-### **2\. Frontend Setup (index.html & script.js)**
+### **2\. Frontend Setup (Web Browser)**
 
-1. **Update Language Codes:** Ensure the \<option\> values in your index.html (e.g., in the \<select id="language"\>) use standard ISO 639-1 language codes (e.g., en, hi) to communicate correctly with both the JavaScript dictionary and the Translation API.  
-2. **Open the HTML:** With the server running, simply open the index.html file in your web browser.  
-3. **Verify Endpoint:** Ensure the prediction logic in script.js is correctly pointing to the local server address: http://127.0.0.1:5000/predict.
+1. **Open the HTML File:** Since the frontend uses standard HTML/CSS/JS, simply open the index.html file in any modern web browser.  
+2. **CORS:** The frontend will attempt to connect to the Flask server at http://127.0.0.1:5000/predict. The flask-cors library ensures this connection works without browser security issues (CORS errors) during local development.
 
-## **🛠️ Logic Flow Summary**
+## **🚀 Usage and Features**
 
-| Component | Responsibility | Action on "Predict Crop" Click |
-| :---- | :---- | :---- |
-| **script.js (Client)** | UI, i18n, Request Prep | Collects 7 input values. Collects current lang code. POSTs data to Flask server. Receives and displays the *translated* crop recommendation. |
-| **app.py (Server)** | Model Execution, Translation | Receives 7 features \+ lang code. Passes 7 features to crop\_model.pkl. Gets English prediction result (e.g., 'rice'). Calls **Google Cloud Translation API** using the requested lang code. Returns the translated crop name. |
+### **Input Features (7 Required Parameters)**
 
+The ML model requires **7 specific inputs** in a specific order:
+
+1. **Nitrogen** (N)  
+2. **Phosphorous** (P)  
+3. **Potassium** (K)  
+4. **Average Temperature**  
+5. **Average Humidity**  
+6. **Soil pH**  
+7. **Average Rainfall**
+
+### **Multilingual Prediction (i18n)**
+
+The application provides translation functionality using a hybrid approach:
+
+* **Client-Side (script.js):** Translates all static UI elements (headings, labels, button text, loading messages) based on the user's selection (English or हिन्दी).  
+* **Server-Side (app.py):** The Python server receives the prediction (e.g., 'mango') and the requested language code ('hi') and uses the built-in CROP\_TRANSLATIONS dictionary to return the translated result (e.g., 'आम').
