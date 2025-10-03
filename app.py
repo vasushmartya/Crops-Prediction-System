@@ -21,6 +21,31 @@ except Exception as e:
 
 # --- Prediction Endpoint ---
 
+CROP_TRANSLATIONS = {
+    'rice': {'en': 'Rice', 'hi': 'चावल'},
+    'maize': {'en': 'Maize', 'hi': 'मक्का'},
+    'apple': {'en': 'Apple', 'hi': 'सेब'},
+    'banana': {'en': 'Banana', 'hi': 'केला'},
+    'blackgram': {'en': 'Blackgram', 'hi': 'उड़द'},
+    'chickpea': {'en': 'Chickpea', 'hi': 'चना'},
+    'coconut': {'en': 'Coconut', 'hi': 'नारियल'},
+    'coffee': {'en': 'Coffee', 'hi': 'कॉफी'},
+    'cotton': {'en': 'Cotton', 'hi': 'कपास'},
+    'grapes': {'en': 'Grapes', 'hi': 'अंगूर'},
+    'jute': {'en': 'Jute', 'hi': 'जूट'},
+    'kidneybeans': {'en': 'Kidneybeans', 'hi': 'राजमा'},
+    'lentil': {'en': 'Lentil', 'hi': 'मसूर'},
+    'mango': {'en': 'Mango', 'hi': 'आम'},
+    'mothbeans': {'en': 'Mothbeans', 'hi': 'मोठ'},
+    'mungbean': {'en': 'Munbean', 'hi': 'मूंग'},
+    'muskmelon': {'en': 'Muskmelon', 'hi': 'खरबूजा'},
+    'orange': {'en': 'Orange', 'hi': 'संतरा'},
+    'papaya': {'en': 'Papaya', 'hi': 'पपीता'},
+    'pigeonpeas': {'en': 'Pigeonpeas', 'hi': 'अरहर'},
+    'pomegranate': {'en': 'Pomegranate', 'hi': 'अनार'},
+    'watermelon': {'en': 'Watermelon', 'hi': 'तरबूज'}
+}
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if MODEL is None:
@@ -40,21 +65,29 @@ def predict():
         pH = float(data['pH'])
         rainfall = float(data['rainfall'])
 
+        requested_lang = data.get('lang', 'en')
+
         # 3. Create a numpy array for the model
         # The model expects a 2D array: [[N, P, K, pH, rainfall]]
         features = np.array([[N, P, K, temperature, humidity, pH, rainfall]])
         
         # 4. Make Prediction
-        prediction = MODEL.predict(features)
+        prediction_key = MODEL.predict(features)[0]
         
-        # The prediction result (e.g., 'rice', 'maize', etc.)
-        crop_recommendation = prediction[0] 
+        if prediction_key in CROP_TRANSLATIONS:
+            # Look up the correct translation, defaulting to the English key if the requested 
+            # language translation is missing.
+            translated_crop = CROP_TRANSLATIONS[prediction_key].get(requested_lang, prediction_key)
+        else:
+            # If the crop key isn't in the translation map, just use the key itself.
+            translated_crop = "not found in translation"
 
-        # 5. Return the result
+        # 6. Return the translated result
         return jsonify({
-            'crop_recommendation': crop_recommendation,
+            'crop_recommendation': translated_crop, # Returns 'चावल' instead of 'rice'
             'status': 'success'
         })
+
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400

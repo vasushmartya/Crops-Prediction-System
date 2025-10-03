@@ -22,7 +22,12 @@ const translations = {
         "humidity-label": "Humidity %",
         "ph-label": "Soil pH",
         "rain": "Average rainfall(in mm)",
-        "predict": "Predict Crop"
+        "predict": "Predict Crop",
+        // DYNAMIC MESSAGES:
+        'result-prefix': "✅ Predicted Crop: ",
+        'predicting-text': "Predicting... please wait.",
+        'error-text': "❌ Error: Could not get prediction. Check server and inputs. ",
+        'validation-text': "Please enter values for all 7 parameters."
     },
     
     'hi': {
@@ -47,7 +52,12 @@ const translations = {
         "humidity-label": "नमी %",
         "ph-label": "मिट्टी का पी एच",
         "rain": "औसत वर्षा (मिमी में)",
-        "predict": "फसल की भविष्यवाणी करें"
+        "predict": "फसल की भविष्यवाणी करें",
+        // DYNAMIC MESSAGES:
+        'result-prefix': "✅ अनुमानित फसल: ", 
+        'predicting-text': "भविष्यवाणी हो रही है... कृपया प्रतीक्षा करें।", 
+        'error-text': "❌ त्रुटि: भविष्यवाणी नहीं हो पाई। सर्वर और इनपुट जांचें। ", 
+        'validation-text': "कृपया सभी 7 पैरामीटर के लिए मान दर्ज करें।"
     }   
 };
 
@@ -57,15 +67,12 @@ function changeLanguage(langCode) {
 
     for (const id in texts) {
         const element = document.getElementById(id);
-        if (element) {
-            if (id === 'predict') {
-                 element.textContent = texts[id];
-            }
-            else {
-                element.textContent = texts[id];
-            }
+        // Exclude dynamic keys (handled in handlePrediction)
+        if (element && id !== 'result-prefix' && id !== 'predicting-text' && id !== 'error-text' && id !== 'validation-text') {
+            element.textContent = texts[id];
         }
     }
+    document.documentElement.lang = langCode;
 }
 
 
@@ -80,16 +87,26 @@ async function handlePrediction() {
     const rainfall = document.getElementById('rainfall').value;
     const temperature = document.getElementById('temperature').value;
     const humidity = document.getElementById('humidity').value;
-    
+    const currentLang = document.getElementById('language').value;
     const resultElement = document.getElementById('result-text');
+    const currentTexts = translations[currentLang];
+
 
     if (!N || !P || !K || !pH || !rainfall || !temperature || !humidity) {
         resultElement.textContent = "Please enter values for all parameters.";
         return;
     }
 
-    const inputData = { N, P, K, pH, rainfall, temperature, humidity }; // All 7 features
-    resultElement.textContent = "Predicting... please wait.";
+    const inputData = { 
+        N: N, P: P, K: K, 
+        temperature: temperature, 
+        humidity: humidity, 
+        pH: pH, rainfall: rainfall,
+        lang: currentLang 
+    }; 
+    
+    // Update loading state with translated message
+    resultElement.textContent = currentTexts['predicting-text'];
 
     try {
         const response = await fetch('http://127.0.0.1:5000/predict', {
@@ -105,7 +122,9 @@ async function handlePrediction() {
 
         const result = await response.json();
         const predictedCrop = result.crop_recommendation;
-        resultElement.textContent = `✅ Predicted Crop: ${predictedCrop.toUpperCase()}`;
+        const prefix = currentTexts['result-prefix'];
+        resultElement.textContent = prefix + predictedCrop;
+        resultElement.style.color = 'green';
 
     } catch (error) {
         console.error('Prediction failed:', error);
