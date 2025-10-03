@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropPredict</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nav">
+        <img src="images\icons8-forage-50.png" alt="" id="logo">
+        <div class="header">
+            <h1 id="header-h1">Crop Predict</h1>
+            <h2 id="header-h2">Smart Farming Through Soil Analysis</h2>
+        </div>
+        <select id="language" name="language">
+            <option value="en" selected>English</option>
+            <option value="hi">हिन्दी</option>
+        </select>
+    </div>
+    <div class="intro">
+        <h1 id="intro-h1">Transform Your Farming with Smart Crop Predictions</h1>
+        <p id="intro-p">Make informed decisions about what crops to plant based on your soil's unique characteristics. Our advanced analysis considers nitrogen, phosphorous, potassium levels, rainfall patterns, and pH balance to recommend the most suitable crops for your land.</p>
+    </div>
+    <div class="cards">
+        <div class="card">
+            <h2 id="card-1">Soil Analysis</h2>
+            <p id="card-1-p">Analyze NPK levels, pH, and rainfall data</p>
+        </div>
+        <div class="card">
+            <h2 id="card-2">Smart Predictions</h2>
+            <p id="card-2-p">AI-powered crop recommendations</p>
+        </div>
+        <div class="card">
+            <h2 id="card-3">Crop Optimization</h2>
+            <p id="card-3-p">Maximize yield with optimal crop selection</p>
+        </div>
+        <div class="card">
+            <h2 id="card-4">Farmer-Friendly</h2>
+            <p id="card-4-p">Simple tools for every farmer</p>
+        </div>
+    </div>
+    <div class="input_field">
+        <h2 id="input-h2">Soil Analysis Input</h2>
+        <p id="input-p">Enter your soil parameters to get personalized crop recommendations</p>
+        <div class="inputs">
+            <div class="input">
+                <label for="N" id="nitrogen">Nitrogen</label>
+                <input type="number" placeholder="30" id="N">
+            </div>
+            <div class="input">
+                <label for="P" id="phosphorus">Phosphorus</label>
+                <input type="number" placeholder="30" id="P">
+            </div>
+            <div class="input">
+                <label for="K" id="potassium">Potassium</label>
+                <input type="number" placeholder="30" id="K">
+            </div>
+            <div class="input">
+                <label for="temperature" id="temperature-label">temperature in C</label>
+                <input type="number" placeholder="30" id="temperature">
+            </div>
+            <div class="input">
+                <label for="humidity" id="humidity-label">Humidity %</label>
+                <input type="number" placeholder="30" id="humidity">
+            </div>
+            <div class="input">
+                <label for="pH" id="ph-label">Soil pH</label>
+                <input type="number" placeholder="7" id="pH">
+            </div>
+            <div class="input">
+                <label for="rainfall" id="rain">Average Rainfall(in mm)</label>
+                <input type="number" placeholder="30" id="rainfall">
+            </div>
+        </div>
+        <button id="predict">Predict Crop</button>
+        <p id="result-text" style="font-weight: bold; margin-top: 20px;"></p> 
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
